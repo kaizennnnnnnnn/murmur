@@ -1,4 +1,4 @@
-"""Voice Profile detail view — the premium 'Your Voice' tab.
+"""Voice Profile detail view - the premium 'Your Voice' tab.
 
 Visual style mirrors the reference: each insight gets its own surface card
 with a large serif-italic display value and a small uppercase eyebrow label.
@@ -60,7 +60,7 @@ def _profile_card(
 def _hero_card(summary: str) -> QFrame:
     """Top-of-page card with a short generated description and an eyebrow.
 
-    No illustration — Murmur is a local tool, no marketing avatar belongs
+    No illustration - Murmur is a local tool, no marketing avatar belongs
     here. Just a clean statement of who the user *is*, as inferred from
     their dictation history."""
     card = QFrame()
@@ -128,7 +128,7 @@ def _generate_summary(stats, profile) -> str:
 
 
 class VoiceProfilePanel(QWidget):
-    """Pure content panel — embedded as the 'Your Voice' tab inside Insights."""
+    """Pure content panel - embedded as the 'Your Voice' tab inside Insights."""
 
     def __init__(self):
         super().__init__()

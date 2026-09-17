@@ -1,4 +1,4 @@
-"""Snippets page — short triggers that expand to longer phrases.
+"""Snippets page - short triggers that expand to longer phrases.
 
 After every transcription, each trigger present in the text is replaced
 with its expansion before the result lands at your cursor. Whole-word,
@@ -26,7 +26,7 @@ from .. import theme
 
 
 class _SnippetRow(QFrame):
-    """One snippet displayed as a card: trigger → expansion + remove."""
+    """One snippet displayed as a card: trigger -> expansion + remove."""
 
     def __init__(self, trigger: str, expansion: str, on_remove: Callable[[str], None]):
         super().__init__()

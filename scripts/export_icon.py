@@ -3,7 +3,7 @@ Windows shortcuts can point at it. Run once after icon changes.
 
 Uses Pillow with LANCZOS resampling for crisp downscaling from the
 1254px source. Qt's SmoothTransformation is bilinear and gets soft on
-large downscales (≈39× shrink to 32px), which is why we bypass Qt here
+large downscales (~39x shrink to 32px), which is why we bypass Qt here
 and go straight from the original PNG."""
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ img = Image.open(src).convert("RGBA")
 w, h = img.size
 
 # Detect the head bounding box and crop tightly around it. A loose
-# 78%-of-source crop leaves the head filling only ~72% of the icon —
+# 78%-of-source crop leaves the head filling only ~72% of the icon,
 # at 32px that means each face feature gets ~23px of room, which goes
 # muddy. Detecting the head box lets us push the head to ~88% fill
 # so the eyes/mouth survive the downscale.
@@ -49,9 +49,9 @@ if y + side > h:
 cropped = img.crop((x, y, x + side, y + side))
 
 # Include every size Windows might ask for so it never has to scale at
-# render time — taskbar (32), large icons (48), jumbo (96, 128), shell
-# extra-large (256). Skipping 16 and 24 because crisp pixel-art line work
-# at that resolution requires hand-tuned hinting, not photo downscaling.
+# render time - taskbar (32), large icons (48), jumbo (96, 128), shell
+# extra-large (256), plus the two small sizes (16, 24) that Explorer's list
+# and detail views ask for.
 sizes = [16, 24, 32, 48, 64, 96, 128, 256]
 images = []
 for size in sizes:

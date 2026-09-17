@@ -1,26 +1,26 @@
-"""Inline correction detection — the "Wispr Flow" trick.
+"""Inline correction detection - the "Wispr Flow" trick.
 
 After Murmur pastes a transcription, this module hooks a global keyboard
 listener for a short window. It maintains a virtual text buffer that starts
 out equal to the pasted text. Each keystroke the user makes is replayed
 onto the buffer:
 
-  • a character key  → appended
-  • space/enter/tab  → appended
-  • backspace        → trims the last char off the buffer
-  • any modifier-down event (Ctrl/Alt/Win) → ignored (so Ctrl+V paste,
+  - a character key  -> appended
+  - space/enter/tab  -> appended
+  - backspace        -> trims the last char off the buffer
+  - any modifier-down event (Ctrl/Alt/Win) -> ignored (so Ctrl+V paste,
     save shortcuts, etc. don't corrupt the buffer)
-  • arrow / home / end / delete / esc / etc. → invalidates tracking
+  - arrow / home / end / delete / esc / etc. -> invalidates tracking
     (we can no longer be sure where the cursor is, so we stop)
 
 When the window closes (timeout, idle, or a new dictation starts), the
 virtual buffer is compared to the original. If they differ meaningfully,
-that's the user's correction — emitted as a Qt signal back to the main
+that's the user's correction - emitted as a Qt signal back to the main
 thread, where it joins the same learning pipeline as the manual edit on
 the Home page.
 
 Best-effort by design. Doesn't try to track cursor position or detect
-edits in the middle of the pasted text — those cases just invalidate.
+edits in the middle of the pasted text - those cases just invalidate.
 That's still enough to capture the common case: "Murmur typed 'Erin',
 I backspaced and typed 'Aaron'."
 """
@@ -54,7 +54,7 @@ class CorrectionWatcher(QObject):
         self._listener = None
         self._max_timer: Optional[threading.Timer] = None
         self._idle_timer: Optional[threading.Timer] = None
-        # Modifier state — events with these held are shortcuts, not text.
+        # Modifier state - events with these held are shortcuts, not text.
         self._ctrl = False
         self._alt = False
         self._cmd = False  # Windows / Meta key
@@ -81,7 +81,7 @@ class CorrectionWatcher(QObject):
         self._reset_idle_timer()
 
     def finalize_now(self) -> None:
-        """Force an immediate finalize — called when the next dictation
+        """Force an immediate finalize - called when the next dictation
         starts so the previous correction commits before recording the new
         transcript."""
         with self._lock:
@@ -135,7 +135,7 @@ class CorrectionWatcher(QObject):
         with self._lock:
             if not self._active:
                 return
-            # Modifier presses — track but don't modify buffer
+            # Modifier presses - track but don't modify buffer
             if key in (K.ctrl, K.ctrl_l, K.ctrl_r):
                 self._ctrl = True
                 return
@@ -145,16 +145,16 @@ class CorrectionWatcher(QObject):
             if key in (K.cmd, K.cmd_l, K.cmd_r):
                 self._cmd = True
                 return
-            # Shift is fine — it's used while typing capitals.
+            # Shift is fine - it's used while typing capitals.
             if key in (K.shift, K.shift_l, K.shift_r):
                 return
-            # Any non-shift modifier held → shortcut chord, ignore the chord key.
+            # Any non-shift modifier held -> shortcut chord, ignore the chord key.
             if self._ctrl or self._alt or self._cmd:
                 return
             # Backspace: trim
             if key == K.backspace:
                 if not self._buffer:
-                    # Backspaced past the pasted region — user is editing
+                    # Backspaced past the pasted region - user is editing
                     # unrelated text now, stop tracking.
                     self._cancel_locked()
                     return
@@ -178,7 +178,7 @@ class CorrectionWatcher(QObject):
             try:
                 ch = key.char
             except AttributeError:
-                # Arrow/Home/End/Delete/F-keys/etc — invalidate.
+                # Arrow/Home/End/Delete/F-keys/etc - invalidate.
                 self._finalize_locked()
                 return
             if ch is None:
@@ -271,12 +271,12 @@ class CorrectionWatcher(QObject):
         drift) so we don't toast on every random keystroke."""
         if a == b:
             return False
-        # If the new buffer is a strict prefix of the original — user is
-        # mid-deletion — don't fire yet (the idle timer will catch the
+        # If the new buffer is a strict prefix of the original - user is
+        # mid-deletion - don't fire yet (the idle timer will catch the
         # final state).
         if a.startswith(b) and len(b) < len(a) - 1:
             return False
-        # Reject diffs that lost most of the text — likely Ctrl+A + delete.
+        # Reject diffs that lost most of the text - likely Ctrl+A + delete.
         if len(b) < max(2, len(a) // 4):
             return False
         return True

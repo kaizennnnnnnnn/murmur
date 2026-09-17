@@ -1,4 +1,4 @@
-"""Home page — greeting + hero tip card + transcript feed grouped by day."""
+"""Home page - greeting + hero tip card + transcript feed grouped by day."""
 from __future__ import annotations
 
 from datetime import date, datetime
@@ -47,7 +47,7 @@ _HERO_PORTRAIT: QPixmap | None = None
 
 
 def _hero_portrait() -> QPixmap:
-    """Cached load of the hero backdrop — a tighter, more head-forward
+    """Cached load of the hero backdrop - a tighter, more head-forward
     portrait kept separate from the app-icon source so each can be tuned
     independently."""
     global _HERO_PORTRAIT
@@ -65,7 +65,7 @@ class _HeroFrame(QFrame):
     The card's base background comes from the stylesheet (HERO_BG). On top
     we draw the portrait scaled to card height, anchored to the right edge,
     then overlay a horizontal gradient that fades from solid HERO_BG on the
-    left to fully transparent on the right — so the image dissolves into
+    left to fully transparent on the right - so the image dissolves into
     the text area instead of stopping with a hard edge."""
 
     def paintEvent(self, event) -> None:
@@ -82,8 +82,8 @@ class _HeroFrame(QFrame):
 
         # Pure-black base under everything so the portrait's solid black
         # source background merges seamlessly into the card. Without this,
-        # the gradient fade reveals a HERO_BG (#1F1F28) → BLACK (#000000)
-        # tonal step at the image's left edge — that's the visible seam.
+        # the gradient fade reveals a HERO_BG (#1F1F28) -> BLACK (#000000)
+        # tonal step at the image's left edge - that's the visible seam.
         black = QColor(0, 0, 0)
         p.fillRect(rect, black)
 
@@ -104,8 +104,8 @@ class _HeroFrame(QFrame):
         # Left-to-right gradient: HERO_BG opaque over the text column,
         # fading to fully transparent past the midpoint. Because the base
         # underneath is now pure black (matching the portrait's bg), the
-        # fade reads as HERO_BG → BLACK with no visible step at the image's
-        # left edge — exactly the seamless dissolve the design wants.
+        # fade reads as HERO_BG -> BLACK with no visible step at the image's
+        # left edge - exactly the seamless dissolve the design wants.
         bg = QColor(theme.HERO_BG)
         bg_clear = QColor(bg.red(), bg.green(), bg.blue(), 0)
         grad = QLinearGradient(0, 0, W, 0)
@@ -135,7 +135,7 @@ class _HeroFrame(QFrame):
 
 
 def _fade_in(widget: QWidget, delay_ms: int = 0, duration_ms: int = 380) -> None:
-    """Premium-feel entrance: opacity 0→1 with an out-cubic curve, staggered
+    """Premium-feel entrance: opacity 0->1 with an out-cubic curve, staggered
     by `delay_ms`. The QGraphicsOpacityEffect is retained on the widget so
     later show events don't re-trigger (it stays at opacity 1)."""
     effect = QGraphicsOpacityEffect(widget)
@@ -180,8 +180,8 @@ class _TranscriptRow(QFrame):
     """One row in the feed: timestamp + text + edit pencil.
 
     Two modes:
-      • view  → label shows the text; row is clickable to copy.
-      • edit  → QTextEdit with Save / Cancel buttons. Save invokes the
+      - view  -> label shows the text; row is clickable to copy.
+      - edit  -> QTextEdit with Save / Cancel buttons. Save invokes the
                 `saved` signal with (row_id, original_text, new_text) so the
                 controller can run the correction-learning pipeline."""
 
@@ -315,7 +315,7 @@ def _hero(hotkey_label: str) -> QFrame:
     eyebrow = QLabel("GETTING STARTED")
     eyebrow.setObjectName("HeroEyebrow")
 
-    # Rich-text title — emphasises "anywhere" in italic serif, mirrors the
+    # Rich-text title - emphasises "anywhere" in italic serif, mirrors the
     # Wispr "sound like *you*" cadence.
     title = QLabel(
         "Speak <i>anywhere</i><br/>Murmur types for you."
@@ -381,7 +381,7 @@ class HomePage(QWidget):
         self._hero_widget = _hero(hotkey_label)
         bl.addWidget(self._hero_widget)
 
-        # Feed wrapper — separate widget so we can fade it as one block.
+        # Feed wrapper - separate widget so we can fade it as one block.
         self._feed_wrapper = QWidget()
         self._feed_holder = QVBoxLayout(self._feed_wrapper)
         self._feed_holder.setContentsMargins(0, 0, 0, 0)

@@ -1,4 +1,4 @@
-"""Scratchpad — a single free-form text area, autosaved to disk."""
+"""Scratchpad - a single free-form text area, autosaved to disk."""
 from __future__ import annotations
 
 import os

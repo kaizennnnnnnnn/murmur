@@ -1,4 +1,4 @@
-"""Murmur theme — light/dark palettes + a dynamically-built stylesheet.
+"""Murmur theme - light/dark palettes + a dynamically-built stylesheet.
 
 Two palettes live here: `LIGHT` and `DARK`. The module-level attributes
 (`theme.BG`, `theme.TEXT`, etc.) are resolved at access time against the
@@ -58,7 +58,7 @@ DARK: dict[str, str] = {
     "PRIMARY_BTN_BG":  "#ECEAE6",
     "PRIMARY_BTN_TEXT": "#131318",
     "PRIMARY_BTN_HOVER": "#FFFFFF",
-    # Monochrome dark theme — accent colours are tonal greys/whites so the
+    # Monochrome dark theme - accent colours are tonal greys/whites so the
     # whole UI matches the black-and-white silhouette icon. ACCENT is the
     # quiet selection tint; ACCENT_DK is the prominent highlight (POLISHED
     # label, focus borders, checkbox check, progress fill).

@@ -1,4 +1,4 @@
-"""Insights page — two tabs, 'Your Usage' (stats grid) and 'Your Voice'
+"""Insights page - two tabs, 'Your Usage' (stats grid) and 'Your Voice'
 (voice profile detail). Matches the Wispr-Flow reference layout: title +
 tab strip + progress bar + content."""
 from __future__ import annotations
@@ -67,7 +67,7 @@ def _fmt_seconds(s: float) -> str:
 # ---- usage panel -----------------------------------------------------------
 
 class _UsagePanel(QWidget):
-    """The 'Your Usage' tab — 2-row stats grid."""
+    """The 'Your Usage' tab - 2-row stats grid."""
 
     def __init__(self):
         super().__init__()
@@ -181,7 +181,7 @@ class InsightsPage(QWidget):
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
 
-        # Header block — title + tabs + progress bar — pinned, not scrolled.
+        # Header block - title + tabs + progress bar - pinned, not scrolled.
         header = QWidget()
         header.setObjectName("MainArea")
         hl = QVBoxLayout(header)
@@ -226,7 +226,7 @@ class InsightsPage(QWidget):
 
         outer.addWidget(header)
 
-        # Scrollable content area — swaps panels based on active tab.
+        # Scrollable content area - swaps panels based on active tab.
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

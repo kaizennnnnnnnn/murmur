@@ -1,4 +1,4 @@
-"""Text injection: save clipboard → set transcript → simulate Ctrl+V → restore.
+"""Text injection: save clipboard -> set transcript -> simulate Ctrl+V -> restore.
 
 Clipboard-paste is the most reliable cross-app injection: works in Chrome,
 VS Code, Slack, Discord, Notepad, Word, terminals, etc.

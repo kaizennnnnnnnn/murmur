@@ -44,7 +44,7 @@ def _register_nvidia_dll_dirs() -> None:
                 if bin_dir.is_dir() and str(bin_dir) not in seen:
                     seen.add(str(bin_dir))
                     os.add_dll_directory(str(bin_dir))
-                    # Also prepend to PATH — belt-and-suspenders since some
+                    # Also prepend to PATH - belt-and-suspenders since some
                     # loaders (CUDA's own loader inside libs) read PATH not
                     # the AddDllDirectory list.
                     os.environ["PATH"] = str(bin_dir) + os.pathsep + os.environ.get("PATH", "")
@@ -68,7 +68,7 @@ except Exception:
 # Whisper's training data includes massive amounts of YouTube and podcast
 # content, so under uncertainty it falls back to these stock phrases verbatim.
 # When we see one of these and nothing else, the audio was unintelligible
-# noise — never paste it.
+# noise - never paste it.
 _HALLUCINATION_PHRASES = frozenset({
     "thank you.",
     "thank you",
@@ -112,7 +112,7 @@ def _is_hallucination(text: str) -> bool:
         return True
     if (text + ".").lower().strip() in _HALLUCINATION_PHRASES:
         return True
-    # Very short outputs (≤2 words) that match the blocklist by prefix
+    # Very short outputs (<=2 words) that match the blocklist by prefix
     if len(norm.split()) <= 3 and any(
         norm == p.rstrip(".") or norm == p for p in _HALLUCINATION_PHRASES
     ):
@@ -183,10 +183,10 @@ class Transcriber:
             # Anti-hallucination guards. Whisper is famous for inventing
             # YouTube-style filler ("Okay, here we go.", "Thanks for watching")
             # when audio is short, quiet, or ambiguous. These tighten the
-            # cutoffs so the model returns nothing instead of fabricating —
+            # cutoffs so the model returns nothing instead of fabricating,
             # but if they're too aggressive on a quiet mic, every recording
             # comes back empty. The current values are tuned for typical
-            # laptop-array audio (peak ~0.15 after normalisation) — looser
+            # laptop-array audio (peak ~0.15 after normalisation) - looser
             # than the old defaults but still firmly anti-hallucination.
             condition_on_previous_text=False,
             no_speech_threshold=0.6,

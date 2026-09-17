@@ -4,7 +4,7 @@ Whisper output is already clean, but polishing fixes light punctuation, removes
 filler words, and can shift tone per the user's chosen persona.
 
 Designed to fail soft: missing API key, no network, rate limit, malformed
-response — any of these return the raw text unchanged. Polishing never blocks
+response - any of these return the raw text unchanged. Polishing never blocks
 the dictation loop.
 """
 from __future__ import annotations

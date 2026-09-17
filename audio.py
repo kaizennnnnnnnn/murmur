@@ -18,13 +18,13 @@ DTYPE = "float32"
 
 # Each sensitivity profile bundles either a fixed gain or peak normalisation
 # (rescaling so the loudest sample sits near full-scale) along with a VAD
-# threshold (how aggressively Whisper's silero-VAD strips silence — lower
+# threshold (how aggressively Whisper's silero-VAD strips silence - lower
 # means more permissive, so quieter audio still reaches the model).
 SENSITIVITY_PROFILES: dict[str, dict] = {
     "normal":    {"gain": 1.0, "vad_threshold": 0.4, "normalize": False, "use_vad": True},
     "sensitive": {"gain": 2.5, "vad_threshold": 0.3, "normalize": False, "use_vad": True},
     # Whisper-quiet renormalises every recording to ~0.9 peak before
-    # transcription — so even a 0.02 peak whisper becomes "loud" audio for
+    # transcription - so even a 0.02 peak whisper becomes "loud" audio for
     # Whisper. silero-VAD is disabled here on purpose: once normalisation
     # has boosted both speech and noise to the same loudness, silero
     # looks at the resulting wash and rejects everything as non-speech.
@@ -60,7 +60,7 @@ _HP_SOS = None
 
 def high_pass(audio: np.ndarray, cutoff_hz: int = 100) -> np.ndarray:
     """Strip low-frequency rumble (laptop fan, HVAC, table thumps) before
-    transcription. Cutoff is 100 Hz — below the lowest male voice
+    transcription. Cutoff is 100 Hz - below the lowest male voice
     fundamental (~85 Hz) so the voice body stays intact, while still
     knocking down the 20-80 Hz HVAC band that's pure noise."""
     if audio.size == 0:
@@ -82,14 +82,16 @@ def noise_gate(
     """Block-based noise gate. Attenuates frames whose RMS is below
     `threshold`, leaving louder frames untouched.
 
-    Required for the whisper-quiet pipeline: without it, peak-normalisation
+    Currently unused: the live pipeline in main.py is high-pass then
+    normalise. Kept because the whisper-quiet profile needs it if that
+    profile is ever wired back up - without it, peak-normalisation
     boosts background hiss to the same loudness as the actual voice, and
     Whisper hallucinates stock phrases ("Thank you for watching", "The
     world is changing") because it can't separate speech from the boosted
     noise wash.
 
     Args:
-        frame_ms: window length for RMS averaging (20ms ≈ one phoneme)
+        frame_ms: window length for RMS averaging (20ms ~ one phoneme)
         threshold: frame RMS below this is treated as noise
         attenuation: gain applied to noise frames (0.02 = -34 dB, near
             inaudible but not a hard zero so transitions don't click)
@@ -131,7 +133,7 @@ class Recorder:
             print(f"[audio] status: {status}")
         flat = indata.reshape(-1)
         self._chunks.put(flat.copy())
-        # Atomic float write — safe to read from the Qt thread without a lock.
+        # Atomic float write - safe to read from the Qt thread without a lock.
         self._latest_level = float(np.sqrt(np.mean(flat ** 2)))
 
     @property
@@ -140,7 +142,7 @@ class Recorder:
 
     def _pick_samplerate(self) -> int:
         """Find a sample rate the device will accept. Whisper wants 16 kHz,
-        but many WASAPI/WDM-KS devices are fixed at 44.1 or 48 kHz — we
+        but many WASAPI/WDM-KS devices are fixed at 44.1 or 48 kHz - we
         record at the device's preferred rate and resample on the way out."""
         candidates = [SAMPLE_RATE]
         try:
@@ -163,7 +165,7 @@ class Recorder:
                 return sr
             except Exception:
                 continue
-        # Last resort — let PortAudio pick whatever the device wants.
+        # Last resort - let PortAudio pick whatever the device wants.
         return SAMPLE_RATE
 
     def start(self) -> None:

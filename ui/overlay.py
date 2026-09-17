@@ -37,7 +37,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QWidget
 
-# Palette — neutral black glass with monochrome voice bars to match the
+# Palette - neutral black glass with monochrome voice bars to match the
 # black-and-white app icon. RECORDING (red) stays as-is because it's a
 # functional state indicator, not an aesthetic accent.
 _BG_TOP = QColor(26, 26, 30, 215)
@@ -313,10 +313,10 @@ class Overlay(QWidget):
                 target = max(_BAR_AMBIENT, audio_lvl)
                 current = self._bars[i]
                 if target > current:
-                    # Attack — leap toward the new peak.
+                    # Attack - leap toward the new peak.
                     self._bars[i] = current * 0.25 + target * 0.75
                 else:
-                    # Release — drift back to baseline.
+                    # Release - drift back to baseline.
                     self._bars[i] = current * 0.82 + target * 0.18
         elif self._state == "transcribing":
             # Heights settle to baseline; only colors flow.
@@ -369,7 +369,7 @@ class Overlay(QWidget):
         p.setBrush(grad)
         p.drawRoundedRect(QRectF(pill_x, pill_y, pill_w, pill_h), radius, radius)
 
-        # Rim — dark hairline on the white pill, bright on the dark pill.
+        # Rim - dark hairline on the white pill, bright on the dark pill.
         p.setPen(QPen(rim_outer, 1))
         p.setBrush(Qt.NoBrush)
         p.drawRoundedRect(
@@ -385,7 +385,7 @@ class Overlay(QWidget):
             max(0.0, radius - 1.5),
         )
 
-        # During a geometry morph the pill is between sizes — skip inner
+        # During a geometry morph the pill is between sizes - skip inner
         # content so we don't draw bars at half-size.
         if self._morph.state() == QPropertyAnimation.Running and self._state != "idle":
             interp = self._morph.currentTime() / max(1, self._morph.duration())
@@ -432,7 +432,7 @@ class Overlay(QWidget):
 
             # The wave: each bar samples a sine offset by its index. Peaks
             # of the wave become the bright tip color; troughs become the
-            # dimmer base. The wave moves left → right over time.
+            # dimmer base. The wave moves left -> right over time.
             wave_phase = self._ambient * _WAVE_SPEED - i * _BAR_PHASE_OFFSET
             wave = 0.5 + 0.5 * math.sin(wave_phase)  # 0..1
             top_color = _lerp_color(bar_mid, bar_bright, wave)
@@ -447,7 +447,7 @@ class Overlay(QWidget):
 
     def _paint_transcribing(self, p: QPainter, w: int, h: int) -> None:
         """Green dot (left) + bars (middle) + neutral loader (right)."""
-        # Green dot on the left — solid, no rotation
+        # Green dot on the left - solid, no rotation
         dot_size = 6
         dot_x = 10
         dot_y = (h - dot_size) // 2
@@ -481,7 +481,7 @@ class Overlay(QWidget):
         p.setBrush(Qt.NoBrush)
         p.drawEllipse(QPointF(cx, cy), r, r)
 
-        # Rotating arc — neutral near-white (no blue, no green)
+        # Rotating arc - neutral near-white (no blue, no green)
         arc_pen = QPen(_LOADER_ARC, 1.6)
         arc_pen.setCapStyle(Qt.RoundCap)
         p.setPen(arc_pen)

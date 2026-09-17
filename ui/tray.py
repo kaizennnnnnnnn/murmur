@@ -39,7 +39,7 @@ _STATE_COLOR = {
 def _make_logo_icon(color: QColor, size: int = 64) -> QIcon:
     """Bold soundwave + accent dot.
 
-    A single thick sine curve (one full cycle: up → through midline → down)
+    A single thick sine curve (one full cycle: up -> through midline -> down)
     with a small filled dot floating just to the left at midline. The dot
     reads as the speaking source; the curve as the sound radiating from it.
     Clean at tray size, distinct from anything we've tried before.

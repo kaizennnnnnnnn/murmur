@@ -1,4 +1,4 @@
-"""Dictionary page — terms that Murmur biases Whisper toward.
+"""Dictionary page - terms that Murmur biases Whisper toward.
 
 Each entry is appended to the `initial_prompt` passed to faster-whisper on
 every transcription, which nudges the model toward recognising names,
@@ -160,7 +160,7 @@ class DictionaryPage(QWidget):
             return
         self._empty_label.hide()
 
-        # Pack chips into wrapping rows manually — 3 per row at ~280px each.
+        # Pack chips into wrapping rows manually - 3 per row at ~280px each.
         per_row = 3
         for i in range(0, len(terms), per_row):
             row = QHBoxLayout()

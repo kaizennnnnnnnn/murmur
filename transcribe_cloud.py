@@ -1,14 +1,14 @@
-"""Groq cloud transcription — Whisper Large v3 Turbo.
+"""Groq cloud transcription - Whisper Large v3 Turbo.
 
 Used as a fallback when local `small.en` fails (returns empty on quiet
 audio) and also as the primary path when the user's mic just doesn't
 capture loud-enough signal for the local model.
 
 Why Groq and not the OpenAI Whisper API?
-  • Free generous tier already required for the polish feature
-  • Whisper Large v3 Turbo is the strongest STT in their lineup, MUCH
+  - Free generous tier already required for the polish feature
+  - Whisper Large v3 Turbo is the strongest STT in their lineup, MUCH
     more robust to quiet/noisy audio than local small.en
-  • Single endpoint, simple multipart POST, no SDK needed
+  - Single endpoint, simple multipart POST, no SDK needed
 """
 from __future__ import annotations
 
@@ -81,7 +81,7 @@ def groq_transcribe(
 ) -> str:
     """POST the audio to Groq's Whisper endpoint and return the text.
 
-    Returns empty string on any failure — callers should fall through to
+    Returns empty string on any failure - callers should fall through to
     whatever they had before instead of crashing the dictation flow."""
     if not api_key or audio.size == 0:
         return ""

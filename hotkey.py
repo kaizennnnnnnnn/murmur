@@ -12,7 +12,7 @@ from pynput import keyboard
 
 K = keyboard.Key
 
-# Logical name → set of pynput keys that satisfy this slot.
+# Logical name -> set of pynput keys that satisfy this slot.
 # Left/right variants of modifiers all satisfy the bare modifier name,
 # so "ctrl+win" works whether the user uses left or right Ctrl/Win.
 _KEY_GROUPS: dict[str, set] = {

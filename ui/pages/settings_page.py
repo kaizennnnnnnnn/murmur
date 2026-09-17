@@ -1,4 +1,4 @@
-"""Embedded Settings page — replaces the old standalone dialog."""
+"""Embedded Settings page - replaces the old standalone dialog."""
 from __future__ import annotations
 
 from dataclasses import replace
@@ -210,7 +210,7 @@ class SettingsPage(QWidget):
         self._save_cb(new)
 
     def _on_theme_picked(self) -> None:
-        """Live theme switch — fires the moment the user picks an option,
+        """Live theme switch - fires the moment the user picks an option,
         without waiting for the Save button. Only the theme field is sent
         through; any unsaved typing in other fields (API key etc.) stays
         in the UI and only persists when the user clicks Save."""

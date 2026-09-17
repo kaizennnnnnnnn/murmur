@@ -48,14 +48,14 @@ _BAR_BOTTOM_MARGIN = 16  # see ui/overlay.py
 _BAR_IDLE_HEIGHT   = 10  # see ui/overlay.py _SIZES["idle"]
 
 # ---- palette ----------------------------------------------------------
-# Slight cool tint in the dark — reads more "Apple/Linear" than pure black.
+# Slight cool tint in the dark - reads more "Apple/Linear" than pure black.
 _BG_TOP        = QColor(26, 28, 36, 242)
 _BG_MID        = QColor(15, 17, 24, 242)
 _BG_BOTTOM     = QColor(7, 9, 14, 242)
 _RIM           = QColor(255, 255, 255, 70)
 _TOP_HIGHLIGHT = QColor(255, 255, 255, 38)
 _ACCENT_DOT    = QColor(135, 185, 245)      # Murmur blue
-_CHECK         = QColor(120, 215, 165)      # soft mint — positive signal
+_CHECK         = QColor(120, 215, 165)      # soft mint - positive signal
 _EYEBROW       = QColor(170, 185, 215, 195) # cool-tinted eyebrow
 _TEXT          = QColor(245, 245, 250)
 
@@ -193,7 +193,7 @@ class OverlayToast(QWidget):
             _SHADOW_PAD, _SHADOW_PAD, self._pill_w, self._pill_h
         )
 
-        # 1. Multi-layer drop shadow — deeper + softer than a single rect.
+        # 1. Multi-layer drop shadow - deeper + softer than a single rect.
         for i in range(10, 0, -1):
             alpha = max(0, 80 - i * 7)
             grow = i * 2.0
@@ -204,8 +204,8 @@ class OverlayToast(QWidget):
                 shadow_rect, _PILL_RADIUS + grow, _PILL_RADIUS + grow
             )
 
-        # 2. Body gradient — three stops for a richer surface than a single
-        #    top→bottom linear.
+        # 2. Body gradient - three stops for a richer surface than a single
+        #    top->bottom linear.
         body_path = QPainterPath()
         body_path.addRoundedRect(pill_rect, _PILL_RADIUS, _PILL_RADIUS)
         grad = QLinearGradient(pill_rect.topLeft(), pill_rect.bottomLeft())
@@ -214,7 +214,7 @@ class OverlayToast(QWidget):
         grad.setColorAt(1.0, _BG_BOTTOM)
         p.fillPath(body_path, grad)
 
-        # 3. Inner top highlight — thin lighter stripe for a 'glass' edge.
+        # 3. Inner top highlight - thin lighter stripe for a 'glass' edge.
         p.setClipPath(body_path)
         highlight_rect = QRectF(
             pill_rect.left() + 1, pill_rect.top() + 1,
@@ -229,7 +229,7 @@ class OverlayToast(QWidget):
         p.fillRect(highlight_rect, h_grad)
         p.setClipping(False)
 
-        # 4. Outer rim — subtle 1px stroke just inside the path.
+        # 4. Outer rim - subtle 1px stroke just inside the path.
         p.setPen(QPen(_RIM, 1))
         p.setBrush(Qt.NoBrush)
         p.drawRoundedRect(
@@ -237,7 +237,7 @@ class OverlayToast(QWidget):
             _PILL_RADIUS, _PILL_RADIUS,
         )
 
-        # 5. Icon — a single small accent dot. Quiet, premium, no check
+        # 5. Icon - a single small accent dot. Quiet, premium, no check
         #    chrome. Two-layer (soft halo + solid centre) for depth.
         icon_cx = _SHADOW_PAD + _PAD_H + 6
         icon_cy = _SHADOW_PAD + self._pill_h / 2

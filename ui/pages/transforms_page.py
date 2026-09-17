@@ -1,4 +1,4 @@
-"""Transforms page — clipboard-in, AI-rewritten clipboard-out.
+"""Transforms page - clipboard-in, AI-rewritten clipboard-out.
 
 Workflow:
   1. User copies text in any app (Ctrl+C)

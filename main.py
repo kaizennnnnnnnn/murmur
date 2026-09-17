@@ -1,4 +1,4 @@
-"""Murmur — push-to-talk dictation for Windows.
+"""Murmur - push-to-talk dictation for Windows.
 
 Hold the configured hotkey (default: Ctrl + Win), or click the bottom dock,
 speak, release / click ✓. Transcribed text is pasted at the cursor in any app.
@@ -161,7 +161,7 @@ class TranscribeWorker(QObject):
         s = self._get_settings()
         sens = get_sensitivity(s.mic_sensitivity)
         import numpy as np
-        # Trim the first 200ms and last 100ms — the hotkey press/release
+        # Trim the first 200ms and last 100ms - the hotkey press/release
         # creates a massive mechanical transient that dwarfs the actual
         # speech (peak=0.8 transient vs. peak=0.05 voice). Cutting these
         # edges before any processing prevents the transient from distorting
@@ -171,7 +171,7 @@ class TranscribeWorker(QObject):
         if audio.size > trim_start + trim_end + 8000:
             audio = audio[trim_start:audio.size - trim_end]
         pre_peak = float(np.max(np.abs(audio))) if audio.size else 0.0
-        # Always: HP filter (strips rumble) → normalize (lifts quiet speech
+        # Always: HP filter (strips rumble) -> normalize (lifts quiet speech
         # to usable levels). The old gain-only path was causing hallucinations
         # because quiet mic audio (peak 0.05) went to Whisper as-is. With
         # the transients trimmed and rumble stripped, normalize is safe.
@@ -183,20 +183,20 @@ class TranscribeWorker(QObject):
         print(f"[worker] transcribe: samples={audio.size} sens={s.mic_sensitivity} "
               f"{mode} vad_thr={sens['vad_threshold']} "
               f"peak {pre_peak:.3f}->{post_peak:.3f}")
-        # Diagnostic WAV dump — keeps the last 5 recordings under
+        # Diagnostic WAV dump - keeps the last 5 recordings under
         # %APPDATA%/Murmur/debug/ so we can inspect what the mic actually
         # captured when transcription returns empty.
         try:
             _save_debug_wav(audio, s.mic_sensitivity)
         except Exception as exc:
             print(f"[worker] debug wav save failed: {exc}")
-        # Phrase the dictionary as a vocabulary hint in a natural sentence —
+        # Phrase the dictionary as a vocabulary hint in a natural sentence,
         # never as a bare comma-separated list. Whisper treats the prompt as
         # text-to-continue: feed it "Foo, Bar, Baz" and it will sometimes
         # just output "Foo, Bar, Baz" instead of transcribing the audio.
         # Wrapping the terms in a sentence anchors the prompt as context.
         # Dictionary terms are deliberately NOT sent as a prompt to the
-        # cloud STT — Whisper treats prompts as text-to-continue, so any
+        # cloud STT - Whisper treats prompts as text-to-continue, so any
         # word from the dictionary that appears in the prompt becomes
         # something Whisper will happily fall back to when the audio is
         # unclear (it returns "Aaron, Amina, Igor" instead of admitting it
@@ -205,7 +205,7 @@ class TranscribeWorker(QObject):
         prompt = None
         # Cloud STT (Groq's Whisper Large v3 Turbo) is the primary path when
         # an API key is available. It's far more robust on quiet/noisy mic
-        # audio than the local small.en model — same caliber as commercial
+        # audio than the local small.en model - same caliber as commercial
         # dictation tools. Falls through to local Whisper if it fails or
         # there's no key.
         from transcribe import _is_hallucination
@@ -274,7 +274,7 @@ class Controller(QObject):
         self._overlay = Overlay()
         # Floating toast pinned just above the voice bar, used for "Learned X".
         self._overlay_toast = OverlayToast()
-        # Watches keyboard activity after each paste — captures user edits
+        # Watches keyboard activity after each paste - captures user edits
         # so we can learn from them ("Wispr Flow"-style inline corrections).
         self._correction_watcher = CorrectionWatcher()
         self._correction_watcher.correction_captured.connect(
@@ -334,7 +334,7 @@ class Controller(QObject):
 
     def _start_dictation(self, via_click: bool) -> None:
         # If the previous paste's correction-watcher is still running, finalize
-        # it now — commits whatever edits the user made before this dictation.
+        # it now - commits whatever edits the user made before this dictation.
         try:
             self._correction_watcher.finalize_now()
         except Exception:
@@ -507,13 +507,12 @@ class Controller(QObject):
 
         Pipeline:
           1. Persist the corrected text into the history DB.
-          2. Diff old vs new — any words the user typed that Whisper didn't
+          2. Diff old vs new - any words the user typed that Whisper didn't
              land on become candidates for the dictionary so Whisper hears
              them next time.
           3. Save the updated dictionary into settings (and notify pages).
           4. Toast a short confirmation on the window."""
         try:
-            history.add  # touch to keep import live in scope
             from history import update_text as _update_text, extract_new_words
             _update_text(row_id, corrected)
         except Exception as exc:
@@ -541,11 +540,11 @@ class Controller(QObject):
             sound.play_learned()
         elif _correction_added_content(original, corrected):
             # Real substitution / addition that didn't yield a new dictionary
-            # term (lowercase words, punctuation, etc) — still worth a quiet
+            # term (lowercase words, punctuation, etc) - still worth a quiet
             # "Saved" so the user knows the edit was captured.
             self._overlay_toast.show_message("Saved", "Your correction")
             sound.play_learned()
-        # Pure deletions / whitespace edits get no toast — Murmur shouldn't
+        # Pure deletions / whitespace edits get no toast - Murmur shouldn't
         # celebrate every backspace.
 
     # ---- quit --------------------------------------------------------------

@@ -1,4 +1,4 @@
-"""Text transforms — clipboard text in, AI-rewritten text out.
+"""Text transforms - clipboard text in, AI-rewritten text out.
 
 Each transform is just a system prompt that gets paired with the user's
 text and sent to Groq. Reuses the existing polish.py infrastructure for

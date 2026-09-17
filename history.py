@@ -1,7 +1,7 @@
-"""Murmur dictation history — SQLite at %APPDATA%\\Murmur\\history.db.
+"""Murmur dictation history - SQLite at %APPDATA%\\Murmur\\history.db.
 
 Every successful dictation gets a row. Insights and the Voice Profile card on
-Home read from this. Pure stdlib — no extra deps.
+Home read from this. Pure stdlib - no extra deps.
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ CREATE INDEX IF NOT EXISTS idx_transcripts_ts ON transcripts(ts);
 """
 
 
-# Conservative English stopword set — kept small on purpose so the user's
+# Conservative English stopword set - kept small on purpose so the user's
 # actual vocabulary still surfaces as their "favorite word".
 _STOPWORDS = frozenset("""
 a an and the of to in on at for with from by is am are was were be been being
@@ -131,18 +131,18 @@ def extract_new_words(
 
     Used after the user edits a transcript: any *proper noun* they typed in
     is a candidate to bias Whisper toward next time. Common English words
-    are NEVER added — Whisper already knows them, and stuffing the prompt
+    are NEVER added - Whisper already knows them, and stuffing the prompt
     with everyday words actively poisons future transcriptions (Whisper
     will sometimes just echo the prompt back instead of transcribing).
 
     Acceptance gate (a word must pass all):
-      • starts with an uppercase letter (proper-noun convention)
-      • is NOT the first word of the correction (sentence-initial caps
+      - starts with an uppercase letter (proper-noun convention)
+      - is NOT the first word of the correction (sentence-initial caps
         aren't reliable proper-noun signals)
-      • is at least 3 characters
-      • not in the stopword list
-      • not already in the user's dictionary (case-insensitive)
-      • didn't appear in the original transcription"""
+      - is at least 3 characters
+      - not in the stopword list
+      - not already in the user's dictionary (case-insensitive)
+      - didn't appear in the original transcription"""
     existing_lower = {w.lower() for w in (existing or set())}
     orig_tokens = {t.lower() for t in _tokens(original)}
 
@@ -287,7 +287,7 @@ def format_active_hour(h: Optional[int]) -> str:
 def voice_type(s: "Stats", p: "VoiceProfile") -> tuple[str, str]:
     """A short, characteristic label for the user's voice habits + a one-line
     description. Used as the right-rail teaser. Mirrors how Wispr labels a
-    profile ('Visual Critique' etc.) — except ours is computed locally from
+    profile ('Visual Critique' etc.) - except ours is computed locally from
     the user's actual dictation history."""
     if s.total_dictations < 3:
         return ("Just getting started",

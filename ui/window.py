@@ -1,4 +1,4 @@
-"""Murmur desktop window — sidebar nav + stacked content + optional right rail.
+"""Murmur desktop window - sidebar nav + stacked content + optional right rail.
 
 Visual reference: Wispr Flow's Home page. We keep the same shape but the
 content is Murmur's (free, offline-first, Groq polish optional).
@@ -43,7 +43,7 @@ from .pages.style_page import StylePage
 from .pages.transforms_page import TransformsPage
 
 
-# Segoe Fluent Icons (Win 11) — fall back to Segoe MDL2 Assets (Win 10+).
+# Segoe Fluent Icons (Win 11) - fall back to Segoe MDL2 Assets (Win 10+).
 _ICON_HOME       = ""
 _ICON_INSIGHTS   = ""
 _ICON_DICTIONARY = ""
@@ -80,12 +80,12 @@ def _draw_murmur_mark(
     offset_x: float = 0.0,
     offset_y: float = 0.0,
 ) -> None:
-    """Murmur's signature mark — a single soft sine cycle radiating to the
+    """Murmur's signature mark - a single soft sine cycle radiating to the
     right of a small focal dot.
 
     Reading:
-      • dot  = the speaking source (you)
-      • wave = the murmur travelling outward — one gentle cycle, not the
+      - dot  = the speaking source (you)
+      - wave = the murmur travelling outward - one gentle cycle, not the
                loud full-amplitude equaliser bars Wispr uses
 
     Drawing tuned to stay sharp at small icon sizes: chunky stroke
@@ -130,7 +130,7 @@ def _draw_murmur_mark(
 
 
 def make_app_icon() -> QIcon:
-    """Murmur app icon — loaded from the multi-size Murmur.ico baked by
+    """Murmur app icon - loaded from the multi-size Murmur.ico baked by
     scripts/export_icon.py (LANCZOS-downsampled from the 1254px source)."""
     import os
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -150,10 +150,10 @@ def _brand_pixmap(
     stroke: QColor | None = None,
     dot: QColor | None = None,
 ) -> QPixmap:
-    """Sidebar brand glyph — the head silhouette baked from WhiteIcon.png
+    """Sidebar brand glyph - the head silhouette baked from WhiteIcon.png
     (transparent background so it floats on either light or dark surface).
 
-    The legacy stroke/dot kwargs are accepted but ignored — the silhouette
+    The legacy stroke/dot kwargs are accepted but ignored - the silhouette
     carries its own tonality from the source art and tinting it would lose
     the line-art shading."""
     global _BRAND_SILHOUETTE
@@ -163,7 +163,7 @@ def _brand_pixmap(
         sil_path = os.path.join(here, "assets", "HeadSilhouette.png")
         _BRAND_SILHOUETTE = QPixmap(sil_path)
     if _BRAND_SILHOUETTE.isNull():
-        # Asset missing — fall back to a transparent square so layouts
+        # Asset missing - fall back to a transparent square so layouts
         # don't collapse.
         pix = QPixmap(size, size)
         pix.fill(Qt.transparent)
@@ -229,7 +229,7 @@ def _make_nav_button(spec: _NavSpec) -> QPushButton:
     btn.setCursor(Qt.PointingHandCursor if spec.enabled else Qt.ArrowCursor)
 
     if spec.coming_soon:
-        # Small "SOON" tag, right-aligned, no background — minimalist.
+        # Small "SOON" tag, right-aligned, no background - minimalist.
         layout = QHBoxLayout(btn)
         layout.setContentsMargins(34, 0, 12, 0)
         layout.addStretch(1)
@@ -241,7 +241,7 @@ def _make_nav_button(spec: _NavSpec) -> QPushButton:
 
 
 class _Sidebar(QWidget):
-    """Left column — brand, primary nav, usage card, bottom nav."""
+    """Left column - brand, primary nav, usage card, bottom nav."""
 
     navigated = Signal(str)  # key
 
@@ -254,7 +254,7 @@ class _Sidebar(QWidget):
         outer.setContentsMargins(18, 22, 14, 18)
         outer.setSpacing(2)
 
-        # Brand row — small bar-chart glyph + serif wordmark + outlined badge.
+        # Brand row - small bar-chart glyph + serif wordmark + outlined badge.
         brand_row = QHBoxLayout()
         brand_row.setSpacing(10)
         brand_row.setContentsMargins(4, 0, 0, 0)
@@ -325,7 +325,7 @@ class _Sidebar(QWidget):
 
 
 class _RightRail(QWidget):
-    """Right column — stats + voice profile. Built once, refreshed on demand."""
+    """Right column - stats + voice profile. Built once, refreshed on demand."""
 
     voice_profile_clicked = Signal()
 
@@ -375,7 +375,7 @@ class _RightRail(QWidget):
 
         outer.addWidget(stats_card)
 
-        # ---- Voice Profile card (clickable teaser only — full data on detail page) ----
+        # ---- Voice Profile card (clickable teaser only - full data on detail page) ----
         vp_card = _ClickableCard()
         vp_card.clicked.connect(self.voice_profile_clicked.emit)
         vp_l = QVBoxLayout(vp_card)
@@ -416,7 +416,7 @@ class _RightRail(QWidget):
         text_col.addStretch(1)
         body_row.addLayout(text_col, 1)
 
-        # Subtle wave glyph on the right — Murmur's mark, muted grey.
+        # Subtle wave glyph on the right - Murmur's mark, muted grey.
         glyph = QLabel()
         glyph.setFixedSize(56, 56)
         glyph.setAttribute(Qt.WA_TransparentForMouseEvents)
@@ -496,7 +496,7 @@ class MurmurWindow(QMainWindow):
     """Top-level desktop window. Hides to tray on close (controller decides)."""
 
     page_changed = Signal(str)
-    close_requested = Signal()       # X clicked — controller hides us
+    close_requested = Signal()       # X clicked - controller hides us
     settings_changed = Signal()      # settings page saved
     transcript_corrected = Signal(int, str, str)  # row_id, original, corrected
 
@@ -570,7 +570,7 @@ class MurmurWindow(QMainWindow):
 
         self._go("home")
 
-        # Shared toast widget — floats above everything, used for "Learned X".
+        # Shared toast widget - floats above everything, used for "Learned X".
         self._toast = Toast(self)
 
     def resizeEvent(self, event):

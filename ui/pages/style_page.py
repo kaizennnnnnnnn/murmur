@@ -1,4 +1,4 @@
-"""Style page — pick which AI persona polishes your dictation."""
+"""Style page - pick which AI persona polishes your dictation."""
 from __future__ import annotations
 
 from dataclasses import replace
@@ -118,7 +118,7 @@ class StylePage(QWidget):
         self._status.setText(self._status_text())
 
     def update_cfg(self, cfg) -> None:
-        """Called when settings change elsewhere — keep persona radio in sync."""
+        """Called when settings change elsewhere - keep persona radio in sync."""
         self._cfg = cfg
         btn = self._buttons.get(cfg.style_persona)
         if btn and not btn.isChecked():

@@ -16,7 +16,7 @@ _SAMPLE_RATE = 22_050
 
 
 def _make_double_blip(volume: float = 0.10) -> bytes:
-    """Two quick blips ('tap-tap') — second one slightly higher pitch.
+    """Two quick blips ('tap-tap') - second one slightly higher pitch.
     Conversational pair instead of a single held tone."""
     duration_ms = 100
     n_total = int(_SAMPLE_RATE * duration_ms / 1000)
@@ -36,9 +36,9 @@ def _make_double_blip(volume: float = 0.10) -> bytes:
             env[:attack] *= np.linspace(0.0, 1.0, attack)
         target[start_idx:end_idx] += wave * env
 
-    # Note 1 — D5, 0 → 40 ms
+    # Note 1 - D5, 0 -> 40 ms
     _short_blip(out, 0, 40, 587.0)
-    # Note 2 — F5 (minor third above), 50 → 100 ms
+    # Note 2 - F5 (minor third above), 50 -> 100 ms
     _short_blip(out, int(_SAMPLE_RATE * 0.050), 50, 698.0)
 
     out /= max(1e-6, np.max(np.abs(out)))
@@ -57,7 +57,7 @@ _START_BLIP = _make_double_blip(volume=0.10)
 
 
 def _make_learned_chime(volume: float = 0.10) -> bytes:
-    """Soft two-note rising chime — C5 → G5 with a longer decay than the
+    """Soft two-note rising chime - C5 -> G5 with a longer decay than the
     start blip. Reads as a gentle confirmation rather than a click."""
     duration_ms = 280
     n_total = int(_SAMPLE_RATE * duration_ms / 1000)
@@ -80,7 +80,7 @@ def _make_learned_chime(volume: float = 0.10) -> bytes:
             env[:attack] *= np.linspace(0.0, 1.0, attack)
         target[start_idx:end_idx] += wave_sig * env
 
-    # C5 → G5 (perfect fifth, friendly rising interval)
+    # C5 -> G5 (perfect fifth, friendly rising interval)
     _note(out, 0, 140, 523.25, decay=12.0)
     _note(out, int(_SAMPLE_RATE * 0.070), 200, 783.99, decay=10.0)
 
@@ -108,7 +108,7 @@ def _play_blocking(data: bytes) -> None:
 
 
 def play_start() -> None:
-    """Subtle blip when dictation begins. Non-blocking — runs on a daemon thread
+    """Subtle blip when dictation begins. Non-blocking - runs on a daemon thread
     so the 75ms playback doesn't stall the hotkey path."""
     if sys.platform != "win32":
         return

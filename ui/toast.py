@@ -1,4 +1,4 @@
-"""Floating toast notification — slides down from the top of the window,
+"""Floating toast notification - slides down from the top of the window,
 auto-dismisses after a few seconds. Used for 'Learned X for next time' and
 similar quiet confirmations."""
 from __future__ import annotations
@@ -23,7 +23,7 @@ from . import theme
 
 
 class Toast(QFrame):
-    """Single shared toast — call `show_message()` to display; repeated
+    """Single shared toast - call `show_message()` to display; repeated
     calls replace the current contents and reset the timer."""
 
     def __init__(self, parent: QWidget):

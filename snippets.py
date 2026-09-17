@@ -1,4 +1,4 @@
-"""Snippet expansion — substitute short triggers with their stored expansions.
+"""Snippet expansion - substitute short triggers with their stored expansions.
 
 Applied to the transcript after AI polish (if any) and right before the
 text is pasted at the cursor. Match is case-insensitive but only on whole
