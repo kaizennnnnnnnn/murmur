@@ -22,7 +22,6 @@ from PySide6.QtWidgets import (
 )
 
 from settings import Settings
-from .. import theme
 
 
 class _SnippetRow(QFrame):

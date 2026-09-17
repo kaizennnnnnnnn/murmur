@@ -23,7 +23,15 @@ class Settings:
     hotkey_key: str = "ctrl+win"
     min_recording_ms: int = 300
     polish_enabled: bool = False
-    groq_api_key: str = ""
+    groq_api_key: str = field(default="", repr=False)
+    # Sending the recording itself to Groq is a separate decision from
+    # polishing the text, so it gets its own switch and defaults to off.
+    # Holding a key must not be enough to start uploading audio.
+    cloud_stt_enabled: bool = False
+    # The correction watcher reads keystrokes after a paste. It is scoped
+    # to the window that received the paste, but it is still a keyboard
+    # hook, so it can be turned off.
+    correction_learning_enabled: bool = True
     style_persona: str = "raw"
     theme: str = "light"
     mic_sensitivity: str = "normal"  # normal | sensitive | whisper

@@ -19,7 +19,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from . import theme
 
 
 class Toast(QFrame):

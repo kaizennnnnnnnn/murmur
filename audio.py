@@ -16,32 +16,26 @@ CHANNELS = 1
 DTYPE = "float32"
 
 
-# Each sensitivity profile bundles either a fixed gain or peak normalisation
-# (rescaling so the loudest sample sits near full-scale) along with a VAD
-# threshold (how aggressively Whisper's silero-VAD strips silence - lower
-# means more permissive, so quieter audio still reaches the model).
+# A sensitivity profile controls how much of the recording survives the
+# voice-activity filter: the silero-VAD threshold, where lower is more
+# permissive so quieter speech still reaches the model, and whether silero
+# runs at all. Level is deliberately not part of it. main.py high-passes and
+# peak-normalises every recording to 0.8 whatever the profile says, which
+# lifts a quiet microphone considerably more than the old fixed per-profile
+# gain did; that gain was removed because it was causing hallucinations.
 SENSITIVITY_PROFILES: dict[str, dict] = {
-    "normal":    {"gain": 1.0, "vad_threshold": 0.4, "normalize": False, "use_vad": True},
-    "sensitive": {"gain": 2.5, "vad_threshold": 0.3, "normalize": False, "use_vad": True},
-    # Whisper-quiet renormalises every recording to ~0.9 peak before
-    # transcription - so even a 0.02 peak whisper becomes "loud" audio for
-    # Whisper. silero-VAD is disabled here on purpose: once normalisation
-    # has boosted both speech and noise to the same loudness, silero
-    # looks at the resulting wash and rejects everything as non-speech.
-    # Whisper's own no-speech detection catches genuine silence anyway.
-    "whisper":   {"gain": 1.0, "vad_threshold": 0.1, "normalize": True, "use_vad": False},
+    "normal":    {"vad_threshold": 0.4, "use_vad": True},
+    "sensitive": {"vad_threshold": 0.3, "use_vad": True},
+    # Silero is switched off here on purpose. Once normalisation has lifted
+    # speech and background noise to the same loudness, silero sees only the
+    # resulting wash and rejects all of it as non-speech. Whisper's own
+    # no-speech detection still catches genuine silence.
+    "whisper":   {"vad_threshold": 0.1, "use_vad": False},
 }
 
 
 def get_sensitivity(name: str) -> dict:
     return SENSITIVITY_PROFILES.get(name, SENSITIVITY_PROFILES["normal"])
-
-
-def apply_gain(audio: np.ndarray, gain: float) -> np.ndarray:
-    """Amplify the recorded buffer, clipping at full-scale to avoid wrap-around."""
-    if gain == 1.0 or audio.size == 0:
-        return audio
-    return np.clip(audio * gain, -1.0, 1.0)
 
 
 def normalize_peak(audio: np.ndarray, target: float = 0.9) -> np.ndarray:
@@ -71,51 +65,6 @@ def high_pass(audio: np.ndarray, cutoff_hz: int = 100) -> np.ndarray:
         _HP_SOS = butter(4, cutoff_hz, btype="high", fs=SAMPLE_RATE, output="sos")
     from scipy.signal import sosfilt
     return sosfilt(_HP_SOS, audio).astype(np.float32)
-
-
-def noise_gate(
-    audio: np.ndarray,
-    frame_ms: int = 20,
-    threshold: float = 0.005,
-    attenuation: float = 0.05,
-) -> np.ndarray:
-    """Block-based noise gate. Attenuates frames whose RMS is below
-    `threshold`, leaving louder frames untouched.
-
-    Currently unused: the live pipeline in main.py is high-pass then
-    normalise. Kept because the whisper-quiet profile needs it if that
-    profile is ever wired back up - without it, peak-normalisation
-    boosts background hiss to the same loudness as the actual voice, and
-    Whisper hallucinates stock phrases ("Thank you for watching", "The
-    world is changing") because it can't separate speech from the boosted
-    noise wash.
-
-    Args:
-        frame_ms: window length for RMS averaging (20ms ~ one phoneme)
-        threshold: frame RMS below this is treated as noise
-        attenuation: gain applied to noise frames (0.02 = -34 dB, near
-            inaudible but not a hard zero so transitions don't click)
-    """
-    if audio.size == 0:
-        return audio
-    frame_size = int(SAMPLE_RATE * frame_ms / 1000)
-    if audio.size < frame_size * 2:
-        return audio
-    n_frames = audio.size // frame_size
-    used = n_frames * frame_size
-    frames = audio[:used].reshape(n_frames, frame_size)
-    frame_rms = np.sqrt(np.mean(frames ** 2, axis=1))
-    gain = np.where(frame_rms > threshold, 1.0, attenuation).astype(np.float32)
-    # Smooth gain envelope across 3 frames (60ms) to avoid clicks on
-    # quick transitions and to bridge brief inter-syllable dips.
-    if gain.size >= 3:
-        kernel = np.ones(3, dtype=np.float32) / 3.0
-        gain = np.convolve(gain, kernel, mode="same")
-    out = np.empty_like(audio)
-    out[:used] = (frames * gain[:, None]).reshape(-1)
-    tail_gain = gain[-1] if gain.size else 1.0
-    out[used:] = audio[used:] * tail_gain
-    return out
 
 
 class Recorder:

@@ -17,7 +17,6 @@ from PySide6.QtWidgets import (
 )
 
 import polish
-from .. import theme
 
 
 def _persona_card(p: polish.Persona, btn: QRadioButton) -> QFrame:

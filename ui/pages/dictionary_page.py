@@ -10,7 +10,6 @@ from dataclasses import replace
 from typing import Callable
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -23,7 +22,6 @@ from PySide6.QtWidgets import (
 )
 
 from settings import Settings
-from .. import theme
 
 
 class _Chip(QFrame):

@@ -29,7 +29,6 @@ from PySide6.QtWidgets import (
 
 import transforms as transforms_mod
 from settings import Settings
-from .. import theme
 
 
 # ---- background worker -----------------------------------------------------
@@ -220,7 +219,7 @@ class TransformsPage(QWidget):
 
     def _status_text(self) -> str:
         if not self._cfg.groq_api_key.strip():
-            return ("Transforms need a Groq API key — add one in Settings, "
+            return ("Transforms send your text to Groq and need an API key — add one in Settings, "
                     "then come back.")
         return "Ready. Copy some text first, then click a transform below."
 

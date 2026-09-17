@@ -67,7 +67,7 @@ def _signal_running_instance(message: str, timeout_ms: int = 400) -> bool:
 import history
 import settings as settings_mod
 import sound
-from audio import SAMPLE_RATE, Recorder, apply_gain, get_sensitivity, high_pass, normalize_peak
+from audio import SAMPLE_RATE, Recorder, get_sensitivity, high_pass, normalize_peak
 from hotkey import HotkeyListener
 from inject import inject_text
 from correction_watcher import CorrectionWatcher
@@ -203,15 +203,16 @@ class TranscribeWorker(QObject):
         # didn't hear anything). The prompt is only useful for local
         # transcription on very clear audio with rare proper nouns.
         prompt = None
-        # Cloud STT (Groq's Whisper Large v3 Turbo) is the primary path when
-        # an API key is available. It's far more robust on quiet/noisy mic
-        # audio than the local small.en model - same caliber as commercial
-        # dictation tools. Falls through to local Whisper if it fails or
-        # there's no key.
+        # Cloud STT (Groq's Whisper Large v3 Turbo) is far more robust on
+        # quiet or noisy mic audio than the local small.en model. It also
+        # uploads the recording, so it needs its own explicit opt-in:
+        # holding an API key for the polish or transform features must not
+        # be enough to start sending audio off the machine. When it is on
+        # it runs first, and local Whisper still catches a failure.
         from transcribe import _is_hallucination
         text = ""
         used_cloud = False
-        if s.groq_api_key:
+        if s.groq_api_key and s.cloud_stt_enabled:
             try:
                 raw = groq_transcribe(audio, s.groq_api_key, initial_prompt=prompt)
                 if raw and _is_hallucination(raw):
@@ -414,8 +415,10 @@ class Controller(QObject):
             self._window.notify_new_dictation()
         except Exception as exc:
             print(f"[main] window refresh failed: {exc}")
-        # Watch for inline edits the user makes right after the paste.
-        if row_id > 0:
+        # Watch for inline edits the user makes right after the paste. The
+        # watcher reads keystrokes, so it is scoped to the window that got
+        # the paste and can be turned off entirely in Settings.
+        if row_id > 0 and self._cfg.correction_learning_enabled:
             try:
                 self._correction_watcher.start_watching(row_id, text)
             except Exception as exc:

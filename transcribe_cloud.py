@@ -1,11 +1,12 @@
 """Groq cloud transcription - Whisper Large v3 Turbo.
 
-Used as a fallback when local `small.en` fails (returns empty on quiet
-audio) and also as the primary path when the user's mic just doesn't
-capture loud-enough signal for the local model.
+Off unless the user ticks 'Transcribe in the cloud' in Settings, because
+this uploads the recording itself. When it is on it runs first and local
+`small.en` becomes the fallback, since Large v3 Turbo copes with a quiet
+or noisy microphone that the local model returns empty on.
 
 Why Groq and not the OpenAI Whisper API?
-  - Free generous tier already required for the polish feature
+  - Free generous tier, already used by the polish feature
   - Whisper Large v3 Turbo is the strongest STT in their lineup, MUCH
     more robust to quiet/noisy audio than local small.en
   - Single endpoint, simple multipart POST, no SDK needed

@@ -68,7 +68,10 @@ The Insights page reports words dictated, time saved, vocabulary size and your
 most-used words.
 
 **Correction learning.** After Murmur pastes, it watches briefly to see whether
-you edit what it wrote, and records the correction.
+you edit what it wrote, and records the correction. It reads keystrokes to do
+that, so it is confined to the window the paste landed in: move focus anywhere
+else and the buffer is discarded rather than saved. It can be switched off
+entirely in Settings, under Corrections.
 
 **A scratchpad**, autosaved to disk.
 
@@ -93,17 +96,18 @@ anywhere.
 
 ## The cloud features are opt-in, and they are a real trade-off
 
-Murmur can use [Groq](https://groq.com) for two things, both off by default and
-both requiring an API key you paste into Settings yourself:
+Murmur can use [Groq](https://groq.com) for two things. Both need an API key you
+paste into Settings, and each has its own switch, because they do not send the
+same thing. **Holding a key uploads nothing on its own.**
 
 1. **Cloud transcription** — Whisper Large v3 Turbo. Considerably more robust
-   than local `small.en` on a quiet or noisy microphone.
-2. **AI polish and transforms** — Llama 3.3 70B.
+   than local `small.en` on a quiet or noisy microphone. **This uploads your
+   recorded audio**, as a WAV, on every dictation. Off by default.
+2. **AI polish and transforms** — Llama 3.3 70B. This uploads the transcribed
+   **text**, never the audio. Off by default.
 
-**Be clear about what this means: once you set that key, your recorded audio and
-your transcripts are uploaded to Groq's servers.** That is the whole cost of the
-feature, and it is why it ships switched off. Leave the key blank and Murmur is
-fully offline — the network is never touched after the initial model download.
+Leave both switches off and Murmur is fully offline: the network is never touched
+after the initial model download, whether or not a key is stored.
 
 Both paths fail soft. A missing key, a dead connection, a rate limit or a
 malformed response all return your raw text unchanged; nothing in the dictation
@@ -120,7 +124,8 @@ Open the window (`Murmur-Open.bat`, or the tray icon) and use the Settings page:
 - Push-to-talk hotkey — a single key (`ctrl_r`) or a combo (`ctrl+win`)
 - Theme, light or dark
 - Microphone sensitivity — `normal`, `sensitive`, or `whisper`
-- Groq API key, AI polish toggle, persona
+- Groq API key, and separately: cloud transcription on/off, AI polish on/off, persona
+- Correction learning on/off
 
 ### Choosing a model
 
@@ -142,7 +147,7 @@ hotkey up      ->  audio handed to a Qt worker thread
                    |- trim 200 ms head / 100 ms tail  (kills the key-press thump)
                    |- 100 Hz high-pass                (kills fan and HVAC rumble)
                    |- peak-normalise to 0.8           (lifts quiet speech)
-                   |- transcribe: Groq if a key is set, else local Whisper
+                   |- transcribe: Groq if cloud STT is switched on, else local
                    |- reject known Whisper hallucinations
                    |- AI polish, if enabled
                    \- expand snippets

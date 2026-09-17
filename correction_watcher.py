@@ -10,8 +10,13 @@ onto the buffer:
   - backspace        -> trims the last char off the buffer
   - any modifier-down event (Ctrl/Alt/Win) -> ignored (so Ctrl+V paste,
     save shortcuts, etc. don't corrupt the buffer)
-  - arrow / home / end / delete / esc / etc. -> invalidates tracking
-    (we can no longer be sure where the cursor is, so we stop)
+  - arrow / home / end / delete / esc / etc. -> closes the window and
+    commits whatever has been collected, since the cursor position can
+    no longer be trusted for further edits
+
+Tracking is confined to the window that received the paste. If focus
+moves anywhere else the buffer is thrown away, not committed, so text
+typed into another application can never become part of a transcript.
 
 When the window closes (timeout, idle, or a new dictation starts), the
 virtual buffer is compared to the original. If they differ meaningfully,
@@ -26,10 +31,27 @@ I backspaced and typed 'Aaron'."
 """
 from __future__ import annotations
 
+import sys
 import threading
 from typing import Optional
 
 from PySide6.QtCore import QObject, Signal
+
+
+def _foreground_window() -> int:
+    """Handle of the window that currently has keyboard focus, or 0.
+
+    0 means 'could not tell', and callers treat it as 'keep watching'
+    rather than as a mismatch. Discarding a real correction because a
+    ctypes call failed would be a worse outcome than the check being
+    inert on a machine where it cannot run."""
+    if sys.platform != "win32":
+        return 0
+    try:
+        import ctypes
+        return int(ctypes.windll.user32.GetForegroundWindow())
+    except Exception:
+        return 0
 
 
 # Tunables
@@ -58,6 +80,9 @@ class CorrectionWatcher(QObject):
         self._ctrl = False
         self._alt = False
         self._cmd = False  # Windows / Meta key
+        # The window the paste landed in. Keystrokes are only ever read
+        # while this window still has focus.
+        self._hwnd = 0
 
     # ---- public API ---------------------------------------------------
 
@@ -72,6 +97,7 @@ class CorrectionWatcher(QObject):
             self._row_id = row_id
             self._original = pasted_text
             self._buffer = pasted_text
+            self._hwnd = _foreground_window()
             self._ctrl = False
             self._alt = False
             self._cmd = False
@@ -135,6 +161,17 @@ class CorrectionWatcher(QObject):
         with self._lock:
             if not self._active:
                 return
+            # Only the window the paste landed in is being corrected.
+            # The moment focus moves, whatever is being typed belongs to
+            # another application - a password prompt, a chat, a terminal -
+            # and must never reach the transcript. Discard rather than
+            # finalize: committing here would write those keystrokes into
+            # history.db and mine them for dictionary terms.
+            if self._hwnd:
+                current = _foreground_window()
+                if current and current != self._hwnd:
+                    self._cancel_locked()
+                    return
             # Modifier presses - track but don't modify buffer
             if key in (K.ctrl, K.ctrl_l, K.ctrl_r):
                 self._ctrl = True
@@ -264,6 +301,13 @@ class CorrectionWatcher(QObject):
         self._active = False
         self._stop_listener()
         self._cancel_timers()
+        # Drop the collected text rather than leaving it in memory for
+        # the next start_watching to inherit. Cancel means this edit
+        # never happened, so nothing about it should survive.
+        self._buffer = ""
+        self._original = ""
+        self._row_id = None
+        self._hwnd = 0
 
     @staticmethod
     def _meaningful_diff(a: str, b: str) -> bool:

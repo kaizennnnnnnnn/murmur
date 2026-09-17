@@ -59,6 +59,15 @@ def _row(label_text: str, control: QWidget, helper: str = "") -> QWidget:
     return w
 
 
+def _hint(text: str) -> QLabel:
+    """Explanatory line under a checkbox, which already carries its own
+    label, so _row would put a redundant heading above it."""
+    h = QLabel(text)
+    h.setObjectName("FieldHelp")
+    h.setWordWrap(True)
+    return h
+
+
 def _select_combo_value(combo: QComboBox, value) -> None:
     for i in range(combo.count()):
         if combo.itemData(i) == value:
@@ -144,12 +153,25 @@ class SettingsPage(QWidget):
                    "silence filter. Applies immediately.",
         ))
 
-        # ---- Section: AI polish -------------------------------------------
-        bl.addWidget(self._section("AI Polish (optional)"))
+        # ---- Section: corrections -----------------------------------------
+        bl.addWidget(self._section("Corrections"))
 
-        self.polish_toggle = QCheckBox("Polish my dictation with Groq")
-        self.polish_toggle.setChecked(cfg.polish_enabled)
-        bl.addWidget(self.polish_toggle)
+        self.correction_toggle = QCheckBox(
+            "Learn from edits I make right after pasting")
+        self.correction_toggle.setChecked(cfg.correction_learning_enabled)
+        bl.addWidget(self.correction_toggle)
+        bl.addWidget(_hint(
+            "Reads your keystrokes for a few seconds after each paste, and only "
+            "while the window that received the paste still has focus. Switch "
+            "windows and what you type there is discarded, never recorded. Turn "
+            "this off to stop the keyboard hook from running at all."
+        ))
+
+        # ---- Section: Groq ------------------------------------------------
+        # Everything here leaves the machine, so the section says so once at
+        # the top and each switch repeats what specifically gets sent. The key
+        # on its own does nothing: it is the switches below that send data.
+        bl.addWidget(self._section("Groq (optional, sends data off this machine)"))
 
         self.api_key = QLineEdit()
         self.api_key.setEchoMode(QLineEdit.Password)
@@ -157,7 +179,29 @@ class SettingsPage(QWidget):
         self.api_key.setText(cfg.groq_api_key)
         bl.addWidget(_row(
             "Groq API key", self.api_key,
-            helper="Free at console.groq.com/keys — no credit card. Stored locally.",
+            helper="Free at console.groq.com/keys, no credit card. Kept on this "
+                   "machine in %APPDATA%\Murmur\config.json. Holding a key "
+                   "does not send anything on its own; the two switches below do.",
+        ))
+
+        self.cloud_stt_toggle = QCheckBox(
+            "Transcribe in the cloud, which uploads my recorded audio")
+        self.cloud_stt_toggle.setChecked(cfg.cloud_stt_enabled)
+        bl.addWidget(self.cloud_stt_toggle)
+        bl.addWidget(_hint(
+            "Whisper Large v3 Turbo, which handles a quiet or noisy microphone "
+            "far better than the local model. Every recording is sent to Groq "
+            "as a WAV. Leave this off and speech recognition stays entirely on "
+            "this machine."
+        ))
+
+        self.polish_toggle = QCheckBox(
+            "Polish my dictation, which uploads the transcribed text")
+        self.polish_toggle.setChecked(cfg.polish_enabled)
+        bl.addWidget(self.polish_toggle)
+        bl.addWidget(_hint(
+            "Punctuation, capitalisation and filler-word removal by Llama 3.3 "
+            "70B. The text is sent, not the audio."
         ))
 
         self.persona = QComboBox()
@@ -229,6 +273,8 @@ class SettingsPage(QWidget):
             mic_device_index=self.mic.currentData(),
             hotkey_key=self.hotkey.currentData(),
             polish_enabled=self.polish_toggle.isChecked(),
+            cloud_stt_enabled=self.cloud_stt_toggle.isChecked(),
+            correction_learning_enabled=self.correction_toggle.isChecked(),
             groq_api_key=self.api_key.text().strip(),
             style_persona=self.persona.currentData() or "raw",
             theme=self.theme_combo.currentData() or "light",
@@ -244,4 +290,6 @@ class SettingsPage(QWidget):
         self._cfg = cfg
         _select_combo_value(self.persona, cfg.style_persona)
         self.polish_toggle.setChecked(cfg.polish_enabled)
+        self.cloud_stt_toggle.setChecked(cfg.cloud_stt_enabled)
+        self.correction_toggle.setChecked(cfg.correction_learning_enabled)
         self.api_key.setText(cfg.groq_api_key)

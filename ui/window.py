@@ -6,7 +6,7 @@ content is Murmur's (free, offline-first, Groq polish optional).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable
 
 from PySide6.QtCore import QSize, Qt, Signal as _Signal
 # Re-export for backward use; primary import name remains `Signal` below.
@@ -296,7 +296,7 @@ class _Sidebar(QWidget):
         card_l.setSpacing(4)
         title = QLabel("Unlimited dictation")
         title.setObjectName("UsageTitle")
-        body = QLabel("Murmur is fully local — no quotas, no account.")
+        body = QLabel("Runs on your machine — no quotas, no account.")
         body.setObjectName("UsageBody")
         body.setWordWrap(True)
         card_l.addWidget(title)
@@ -479,7 +479,8 @@ class _HelpPage(QWidget):
             f"• Hold {hotkey_label} anywhere in Windows — speak — release to transcribe.",
             "• Or click the small bar at the bottom-center of your screen to start, ✓ to finish, ✗ to cancel.",
             "• Your text is pasted at the cursor in any app (Gmail, VS Code, Slack, Discord, browsers).",
-            "• Murmur is fully local. Audio never leaves your machine unless you enable AI polish in Settings.",
+            "• Speech recognition runs on this machine by default, and nothing is sent anywhere.",
+            "• Settings has two Groq switches, both off until you turn them on: cloud transcription uploads your recorded audio, AI polish uploads the transcribed text.",
             "• Closing this window keeps Murmur running in the tray. Quit from the tray's right-click menu.",
         ]
         for line in bullets:
