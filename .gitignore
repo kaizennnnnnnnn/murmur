@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Editor / tooling state
+.claude/
+.vscode/
+.idea/
+
+# Murmur's own runtime state lives in %APPDATA%\Murmur, never here --
+# but keep these out in case anyone runs the app from inside the repo.
+*.log
+*.db
+debug/
