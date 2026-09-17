@@ -209,6 +209,32 @@ scripts/export_icon.py  Regenerates Murmur.ico from assets/ (needs Pillow)
 
 ---
 
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest tests/ -q
+```
+
+43 tests, about five seconds. No GPU, no model download, no microphone and
+no network: the transcriber is stubbed and the Groq call is replaced by a spy
+that records what it was handed.
+
+`tests/conftest.py` points `APPDATA` at a temporary directory before any
+Murmur module is imported, because `settings.CONFIG_PATH` and
+`history.DB_PATH` are both resolved at import time. Running the suite never
+reads or writes your real `config.json`, `history.db` or `murmur.log`.
+
+| File | What it covers |
+|---|---|
+| `test_audio.py` | The high-pass filter attenuates rumble and passes speech, peak normalisation hits its target and refuses to amplify silence, sensitivity profiles carry the keys the worker reads |
+| `test_privacy.py` | An API key alone uploads nothing, the cloud switch uploads exactly once, and the correction watcher discards its buffer the moment focus leaves the window that received the paste |
+| `test_settings.py` | Round trip, a config written before the newer fields existed, a corrupt file falling back to defaults, and the key reaching disk while staying out of every `repr` |
+| `test_text.py` | Snippets expand whole words only, and Whisper's stock phrases are blocked without catching real speech that happens to contain them |
+
+The suite is mutation-checked: reverting the cloud gate, the window scoping,
+the near-silence guard or whole-word snippet matching each makes it fail.
+
 ## Running the modules on their own
 
 Most modules have a `__main__` block:

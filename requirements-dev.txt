@@ -1,0 +1,4 @@
+# Test runner only. Not needed to run Murmur.
+#   pip install -r requirements-dev.txt
+#   python -m pytest tests/ -q
+pytest>=8.0
